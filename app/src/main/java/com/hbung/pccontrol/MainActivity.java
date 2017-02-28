@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
     ProgressDialog dialog;
     @BindView(R.id.konggeButton)
     Button konggeButton;
-    @BindView(R.id.huicheButton)
-    Button huicheButton;
+    @BindView(R.id.escButton)
+    Button escButton;
 
     JsonHelp jsonHelp;
     @BindView(R.id.linkButton)
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
         builder.show();
     }
 
-    @OnClick({R.id.linkButton, R.id.topIB, R.id.bottomIB, R.id.leftIB, R.id.rigthIB, R.id.konggeButton, R.id.huicheButton})
+    @OnClick({R.id.linkButton, R.id.topIB, R.id.bottomIB, R.id.leftIB, R.id.rigthIB, R.id.konggeButton, R.id.escButton})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.linkButton://重新链接
@@ -111,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
             case R.id.konggeButton:
                 superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_SPACE));
                 break;
-            case R.id.huicheButton:
-                superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_ENTER));
+            case R.id.escButton:
+                superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_ESCAPE));
                 break;
         }
     }

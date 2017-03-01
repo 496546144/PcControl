@@ -15,7 +15,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements SuperSocket.OnCallback {
+public class MainActivity extends AppCompatActivity implements SuperSocket.OnCallback
+        , TouchView.OnCallback {
     @BindView(R.id.topIB)
     ImageButton topIB;
     @BindView(R.id.bottomIB)
@@ -27,12 +28,13 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
     @BindView(R.id.bottomRoot)
     RelativeLayout bottomRoot;
     SuperSocket superSocket;
-    int count;
     ProgressDialog dialog;
     @BindView(R.id.konggeButton)
     Button konggeButton;
-    @BindView(R.id.huicheButton)
-    Button huicheButton;
+    @BindView(R.id.escButton)
+    Button escButton;
+    @BindView(R.id.touchView)
+    TouchView touchView;
 
     JsonHelp jsonHelp;
     @BindView(R.id.linkButton)
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
         dialog.setIndeterminate(true);
         dialog.setMessage("正在搜索局域网中的电脑");
         startSocket();
+        touchView.setOnCallback(this);
     }
 
     private void startSocket() {
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
             linkButton.setEnabled(true);
             showNoLink();
         } else {
-            Snackbar.make(bottomIB,"链接成功",Snackbar.LENGTH_LONG).show();
+            Snackbar.make(bottomIB, "链接成功", Snackbar.LENGTH_LONG).show();
             linkButton.setText("已连接");
             linkButton.setEnabled(false);
         }
@@ -88,11 +91,11 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
         builder.show();
     }
 
-    @OnClick({R.id.linkButton, R.id.topIB, R.id.bottomIB, R.id.leftIB, R.id.rigthIB, R.id.konggeButton, R.id.huicheButton})
+    @OnClick({R.id.linkButton, R.id.topIB, R.id.bottomIB, R.id.leftIB, R.id.rigthIB, R.id.konggeButton, R.id.escButton})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.linkButton://重新链接
-                if(!superSocket.isLinkSuccess){
+                if (!superSocket.isLinkSuccess) {
                     startSocket();
                 }
                 break;
@@ -111,11 +114,17 @@ public class MainActivity extends AppCompatActivity implements SuperSocket.OnCal
             case R.id.konggeButton:
                 superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_SPACE));
                 break;
-            case R.id.huicheButton:
-                superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_ENTER));
+            case R.id.escButton:
+                superSocket.send(jsonHelp.getKey(JavaKeyEvent.VK_ESCAPE));
                 break;
         }
     }
 
 
+    @Override
+    public void onMove(MoveData moveData) {
+        if (superSocket.isLinkSuccess) {
+            superSocket.send(jsonHelp.getMove(moveData));
+        }
+    }
 }

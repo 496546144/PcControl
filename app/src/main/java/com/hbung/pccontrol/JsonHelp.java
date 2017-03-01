@@ -26,4 +26,21 @@ public class JsonHelp {
         }
         return jsonStringer.toString();
     }
+
+    public String getMove(MoveData data) {
+        JSONStringer jsonStringer = new JSONStringer();
+        try {
+            jsonStringer.object();
+            jsonStringer.key("distanceX");
+            jsonStringer.value(data.distanceX);
+            jsonStringer.key("distanceY");
+            jsonStringer.value(data.distanceY);
+            jsonStringer.key("action");
+            jsonStringer.value(2);
+            jsonStringer.endObject();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonStringer.toString();
+    }
 }

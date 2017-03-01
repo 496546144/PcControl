@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SuperSocket {
     Socket socket;
-    String ip = "192.168.2.55";
+    String ip = "";
     private int sotimeout = 3000;
     private int port = 1867;
     public boolean isLinkSuccess = false;
@@ -58,6 +58,9 @@ public class SuperSocket {
             public void run() {
                 super.run();
                 init();
+                if (isLinkSuccess) {
+                    startRead();
+                }
             }
         }.start();
     }
@@ -73,7 +76,7 @@ public class SuperSocket {
             if (ip == null) return;
             socket = new Socket(InetAddress.getByName(ip), port);
             socket.setKeepAlive(true);//开启保持活动状态的套接字
-            socket.setSoTimeout(sotimeout);//设置超时时间
+           // socket.setSoTimeout(sotimeout);//设置超时时间
             isLinkSuccess = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,10 +106,17 @@ public class SuperSocket {
             return true;
         } catch (Exception se) {
             se.printStackTrace();
-            socket = null;
-            linkResult(false);
+
             return false;
         }
+    }
+
+    private void close() throws IOException {
+        if (socket != null) {
+            socket.close();
+            socket = null;
+        }
+        linkResult(false);
     }
 
     /**
@@ -114,22 +124,24 @@ public class SuperSocket {
      *
      * @return
      */
-    public String read() {
+    public void startRead() {
         try {
-            StringBuilder sb = new StringBuilder();
-            socket.setSoTimeout(sotimeout);
+            //socket.setSoTimeout(sotimeout);
             InputStream input = socket.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(input));
-            char[] sn = new char[1024];
-            int len = -1;
-            while ((len = in.read(sn)) > 0) {
-                sb.append(sn, 0, len);
+            String info;
+            while ((info = in.readLine()) != null) {
+                if (info.equals("stop")) {
+                    close();
+                    break;
+                }
             }
-            return sb.toString();
         } catch (IOException se) {
-            socket = null;
-            linkResult(false);
-            return null;
+            try {
+                close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
